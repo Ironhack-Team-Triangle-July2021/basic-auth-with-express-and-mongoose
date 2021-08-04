@@ -2,8 +2,25 @@
 
 <div id="form">
   <h2>Signup</h2>
-  <form action="/signup" method="POST">
 
+
+  {{#if errorMessage}}
+    <div class="error">
+      <p>
+        {{errorMessage}}
+      </p>
+
+      {{#each missingFields}}
+        {{#if this}}
+          · {{@key}} is missing<br />
+        {{/if}}
+      {{/each}}
+
+      </div>
+  {{/if}}
+
+
+  <form action="/signup" method="POST">
     <label> Username
       <input type="text" name="username" placeholder="ironhacker" />
     </label>
