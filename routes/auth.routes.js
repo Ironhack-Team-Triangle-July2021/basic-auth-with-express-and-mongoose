@@ -64,4 +64,33 @@ router.post('/signup', (req, res) => {
         });
 });
 
+
+router.get('/login', (req, res) => res.render('auth/login'));
+
+
+router.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+    if (email === '' || password === '') {
+        res.render('auth/login', {
+            errorMessage: 'Please enter both, email and password to login.'
+        });
+        return;
+    }
+
+    User.findOne( { email} )
+        .then( userFromDB => {
+            if(!userFromDB){
+                res.render('auth/login', { errorMessage: 'Email is not registered. Try with other email.' });
+                return;
+            } else if(bcrypt.compareSync(password, userFromDB.passwordHash)) {
+                res.render('users/user-profile', { user: userFromDB });
+            } else {
+                res.render('auth/login', { errorMessage: 'Incorrect password.' });
+            }
+        })
+
+});
+
+
 module.exports = router;
