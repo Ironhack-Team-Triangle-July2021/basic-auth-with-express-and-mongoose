@@ -9,7 +9,9 @@ const saltRounds = 10;
 
 
 router.get('/userProfile', (req, res) => {
-    res.render('users/user-profile');
+    res.render('users/user-profile', { 
+        userInSession: req.session.currentUser
+    });
 })
 
 router.get('/signup', (req, res) => {
@@ -69,6 +71,7 @@ router.get('/login', (req, res) => res.render('auth/login'));
 
 
 router.post('/login', (req, res) => {
+
     const { email, password } = req.body;
 
     if (email === '' || password === '') {
@@ -84,7 +87,8 @@ router.post('/login', (req, res) => {
                 res.render('auth/login', { errorMessage: 'Email is not registered. Try with other email.' });
                 return;
             } else if(bcrypt.compareSync(password, userFromDB.passwordHash)) {
-                res.render('users/user-profile', { user: userFromDB });
+                req.session.currentUser = userFromDB;
+                res.redirect('/userProfile');
             } else {
                 res.render('auth/login', { errorMessage: 'Incorrect password.' });
             }
@@ -92,5 +96,12 @@ router.post('/login', (req, res) => {
 
 });
 
+
+router.post('/logout', (req, res, next) => {
+    req.session.destroy(err => {
+        if (err) next(err);
+        res.redirect('/');
+    });
+});
 
 module.exports = router;
