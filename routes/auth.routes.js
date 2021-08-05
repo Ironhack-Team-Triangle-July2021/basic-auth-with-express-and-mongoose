@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
 
 const mongoose = require('mongoose');
 const User = require('../models/User.model');
@@ -8,18 +9,18 @@ const { reset } = require("nodemon");
 const saltRounds = 10;
 
 
-router.get('/userProfile', (req, res) => {
+router.get('/userProfile', isLoggedIn, (req, res) => {
     res.render('users/user-profile', { 
         userInSession: req.session.currentUser
     });
 })
 
-router.get('/signup', (req, res) => {
+router.get('/signup', isLoggedOut, (req, res) => {
     res.render('auth/signup');
 });
 
 
-router.post('/signup', (req, res) => {
+router.post('/signup', isLoggedOut, (req, res) => {
     const { username, email, password } = req.body;
 
     // Check if all fields provided
@@ -67,10 +68,10 @@ router.post('/signup', (req, res) => {
 });
 
 
-router.get('/login', (req, res) => res.render('auth/login'));
+router.get('/login', isLoggedOut, (req, res) => res.render('auth/login'));
 
 
-router.post('/login', (req, res) => {
+router.post('/login', isLoggedOut, (req, res) => {
 
     const { email, password } = req.body;
 
@@ -97,7 +98,7 @@ router.post('/login', (req, res) => {
 });
 
 
-router.post('/logout', (req, res, next) => {
+router.post('/logout', isLoggedIn, (req, res, next) => {
     req.session.destroy(err => {
         if (err) next(err);
         res.redirect('/');
