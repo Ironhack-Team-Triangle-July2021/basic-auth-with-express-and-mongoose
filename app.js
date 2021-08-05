@@ -32,7 +32,10 @@ const index = require("./routes/index");
 app.use("/", index);
 
 const authRouter = require('./routes/auth.routes');
-app.use('/', authRouter); 
+app.use('/', authRouter);
+
+const premiumFood = require('./routes/premiumFood.routes');
+app.use('/', premiumFood); 
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
